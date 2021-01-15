@@ -81,10 +81,11 @@ describe("Lens integration tests", () => {
       await app.client.windowByIndex(0);
       await app.client.waitUntilWindowLoaded();
 
-      const { mainProcess: { stdout } } = await app.stop();
+      await app.stop();
+      const logs = app.client.getMainProcessLogs();
 
-      expect(stdout).toContain("no handler");
-      expect(stdout).toContain("lens://internal/foobar?");
+      expect(logs).toContain("no handler");
+      expect(logs).toContain("lens://internal/foobar?");
     });
   });
 
