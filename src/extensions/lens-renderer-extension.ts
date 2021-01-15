@@ -46,7 +46,7 @@ export class LensRendererExtension extends LensExtension {
    * @param pathSchema The path schema for the route.
    * @param handler The function to call when this route has been matched
    */
-  onProtocol(pathSchema: string, handler: RouteHandler): void {
+  onProtocolRequest(pathSchema: string, handler: RouteHandler): void {
     const lprm = LensProtocolRouterRenderer.getInstance<LensProtocolRouterRenderer>();
 
     lprm.extensionOn(this.name, pathSchema, handler);
