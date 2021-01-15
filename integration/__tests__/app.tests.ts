@@ -16,7 +16,7 @@ describe("Lens integration tests", () => {
   const BACKSPACE = "\uE003";
   let app: Application;
   const appStart = async () => {
-    app = util.setup();
+    app = new Application(util.setup());
     await app.start();
     // Wait for splash screen to be closed
     while (await app.client.getWindowCount() > 1);
@@ -66,6 +66,28 @@ describe("Lens integration tests", () => {
   };
   const ready = minikubeReady();
 
+  describe("protocol app start", () => {
+    it("should open the app with a protocol call", async () => {
+      const options = util.setup();
+
+      options.args.push("lens://internal/foobar?");
+
+      const app = new Application(options);
+
+      await app.start();
+
+      // Wait for splash screen to be closed
+      while (await app.client.getWindowCount() > 1);
+      await app.client.windowByIndex(0);
+      await app.client.waitUntilWindowLoaded();
+
+      const { mainProcess: { stdout } } = await app.stop();
+
+      expect(stdout).toContain("no handler");
+      expect(stdout).toContain("lens://internal/foobar?");
+    });
+  });
+
   describe("app start", () => {
     beforeAll(appStart, 20000);
 
@@ -105,7 +127,7 @@ describe("Lens integration tests", () => {
     });
   });
 
-  util.describeIf(ready).skip("workspaces", () => {
+  util.describeIf(ready)("workspaces", () => {
     beforeAll(appStart, 20000);
 
     afterAll(async () => {
@@ -169,7 +191,7 @@ describe("Lens integration tests", () => {
     await app.client.waitUntilTextExists("span.link-text", "Cluster");
   };
 
-  util.describeIf(ready).skip("cluster tests", () => {
+  util.describeIf(ready)("cluster tests", () => {
     let clusterAdded = false;
     const addCluster = async () => {
       await clickWhatsNew(app);

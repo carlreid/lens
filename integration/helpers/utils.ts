@@ -1,4 +1,4 @@
-import { Application } from "spectron";
+import { AppConstructorOptions, Application } from "spectron";
 import fse from "fs-extra";
 import path from "path";
 
@@ -37,12 +37,12 @@ export function describeIf(condition: boolean) {
   return condition ? describe : describe.skip;
 }
 
-export function setup(): Application {
+export function setup(): AppConstructorOptions {
   const appPath = getAppTestingPaths();
 
   fse.removeSync(appPath.libraryPath); // remove old install config
 
-  return new Application({
+  return {
     path: appPath.testingPath,
     args: [],
     startTimeout: 30000,
@@ -50,7 +50,7 @@ export function setup(): Application {
     env: {
       CICD: "true"
     }
-  });
+  };
 }
 
 type AsyncPidGetter = () => Promise<number>;
